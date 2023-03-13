@@ -41,6 +41,56 @@ namespace Interactive_Quiz_By_Gurbir
 
         }
 
+        private Question GetQuestionWithoutAnswer()
+        {
+            if (_currentQuestionIndex < 0 || _currentQuestionIndex >= _questionList.Count)
+            {
+                throw new InvalidOperationException("No more questions available");
+            }
+
+            Question question = _questionList[_currentQuestionIndex];
+            if (question is MultipleChoiceQuestion)
+            {
+                MultipleChoiceQuestion mcQuestion = (MultipleChoiceQuestion)question;
+                MultipleChoiceQuestion newQuestion = new MultipleChoiceQuestion();
+                newQuestion.QuestionText = mcQuestion.QuestionText;
+                newQuestion.Points = mcQuestion.Points;
+                newQuestion.Choices = mcQuestion.Choices;
+                return newQuestion;
+            }
+            else if (question is TrueFalseQuestion)
+            {
+                TrueFalseQuestion tfQuestion = (TrueFalseQuestion)question;
+                TrueFalseQuestion newQuestion = new TrueFalseQuestion
+                {
+                    QuestionText = tfQuestion.QuestionText,
+                    Points = tfQuestion.Points,
+                    CorrectAnswer = tfQuestion.CorrectAnswer
+                };
+                newQuestion.Points = tfQuestion.Points;
+                return newQuestion;
+            }
+            else
+            {
+                return null;
+            }
+            
+        }
+
+        public Question GetNextQuestion()
+        {
+            _currentQuestionIndex++;
+            return GetQuestionWithoutAnswer();
+        }
+
+        public void CheckUserAnswer(Question question, string userAnswer)
+        {
+            if(question.CorrectAnswer.Equals(userAnswer, StringComparison.OrdinalIgnoreCase))
+            {
+                Score++;
+            }
+        }
+
 
     }
 
