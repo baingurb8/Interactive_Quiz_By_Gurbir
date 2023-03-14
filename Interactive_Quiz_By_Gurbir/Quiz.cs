@@ -3,21 +3,21 @@ namespace Interactive_Quiz_By_Gurbir
 {
 	public class Quiz
 	{
-		private List<Question> _questionList = new List<Question>();
+        private List<Question> _questionList; 
 		private int _currentQuestionIndex = -1;
-		private int _score = 0;
+        private bool _isAnswered = false;
+        private int _score;
+      
+       
+		public int Score { get { return _score; } private set { _score = value; } }
 
 		public string Title { get; set; }
 
-        public int Score
-        {
-            get { return _score; }
-			private set { _score = value; }
-        }
-
+       
 		public Quiz(string title)
 		{
-			Title = title;
+            Title = title;
+            _questionList = new List<Question>();
 			LoadQuestions();
 		}
 
@@ -27,15 +27,76 @@ namespace Interactive_Quiz_By_Gurbir
             {
                 QuestionText = "What is the capital of France?",
                 Points = 1,
-                CorrectAnswer = "Paris",
-                Choices = new string[] { "Berlin", "Madrid", "Paris", "London" }
+                Choices = new List<string> { "Berlin", "Madrid", "Paris", "London" },
+                CorrectAnswer = "Paris"
             });
+
+            _questionList.Add(new MultipleChoiceQuestion
+            {
+                QuestionText = "Which planet is closest to the sun?",
+                Points = 1,
+                Choices = new List<string> { "Mercury", "Venus", "Earth", "Mars" },
+                CorrectAnswer = "Mercury"
+            });
+
+            _questionList.Add(new MultipleChoiceQuestion
+            {
+                QuestionText = "What is the largest organ in the human body?",
+                Points = 1,
+                Choices = new List<string> { "Brain", "Skin", "Heart", "Liver" },
+                CorrectAnswer = "Skin"
+            });
+
+            _questionList.Add(new MultipleChoiceQuestion
+            {
+                QuestionText = "What is the tallest mammal?",
+                Points = 1,
+                Choices = new List<string> { "Hippopotamus", "Elephant", "Giraffe", "Rhino" },
+                CorrectAnswer = "Giraffe"
+            });
+
+            _questionList.Add(new MultipleChoiceQuestion
+            {
+                QuestionText = "Which of these is not a type of triangle?",
+                Points = 1,
+                Choices = new List<string> { "Right", "Equilateral", "Isoceles", "Square" },
+                CorrectAnswer = "Square"
+            });
+            
 
             _questionList.Add(new TrueFalseQuestion
             {
                 QuestionText = "Australia is a continent",
                 Points = 1,
                 CorrectAnswer = "True"
+            });
+
+            _questionList.Add(new TrueFalseQuestion
+            {
+                QuestionText = "The Nile is the longest river in the world",
+                Points = 1,
+                CorrectAnswer = "True"
+            });
+
+            _questionList.Add(new TrueFalseQuestion
+            {
+                QuestionText = "The Great Wall of China can be seen from space",
+                Points = 1,
+                CorrectAnswer = "False"
+            });
+
+            _questionList.Add(new TrueFalseQuestion
+            {
+                QuestionText = "The human body has four lungs",
+                Points = 1,
+                CorrectAnswer = "False"
+            });
+
+            _questionList.Add(new TrueFalseQuestion
+            {
+                QuestionText = "Mount Kilimanjaro is the highest mountain in the world",
+                Points = 1,
+                CorrectAnswer = "False"
             });
 
 
@@ -49,46 +110,67 @@ namespace Interactive_Quiz_By_Gurbir
             }
 
             Question question = _questionList[_currentQuestionIndex];
-            if (question is MultipleChoiceQuestion)
+            if (question is MultipleChoiceQuestion mcq)
             {
-                MultipleChoiceQuestion mcQuestion = (MultipleChoiceQuestion)question;
-                MultipleChoiceQuestion newQuestion = new MultipleChoiceQuestion();
-                newQuestion.QuestionText = mcQuestion.QuestionText;
-                newQuestion.Points = mcQuestion.Points;
-                newQuestion.Choices = mcQuestion.Choices;
-                return newQuestion;
-            }
-            else if (question is TrueFalseQuestion)
-            {
-                TrueFalseQuestion tfQuestion = (TrueFalseQuestion)question;
-                TrueFalseQuestion newQuestion = new TrueFalseQuestion
+                return new MultipleChoiceQuestion
                 {
-                    QuestionText = tfQuestion.QuestionText,
-                    Points = tfQuestion.Points,
-                    CorrectAnswer = tfQuestion.CorrectAnswer
+                    QuestionText = mcq.QuestionText,
+                    Choices = mcq.Choices,
+                    Points = mcq.Points,
+                    CorrectAnswer = ""
                 };
-                newQuestion.Points = tfQuestion.Points;
-                return newQuestion;
+              
+            }
+            else if (question is TrueFalseQuestion tfq)
+            {
+            
+                return new TrueFalseQuestion
+                {
+                    QuestionText = tfq.QuestionText,
+                    Points = tfq.Points,
+                    CorrectAnswer = ""
+                };
             }
             else
             {
-                return null;
+                throw new ArgumentException("Unknown Type");
             }
+           
             
         }
 
         public Question GetNextQuestion()
         {
-            _currentQuestionIndex++;
-            return GetQuestionWithoutAnswer();
+            
+            if(_currentQuestionIndex < _questionList.Count - 1)
+            {
+                _currentQuestionIndex++;
+                _isAnswered = false;          
+                return GetQuestionWithoutAnswer();
+                
+            }
+            throw new InvalidOperationException("No More Questions");
         }
 
-        public void CheckUserAnswer(Question question, string userAnswer)
+        public bool CheckUserAnswer(string userAnswer)
         {
-            if(question.CorrectAnswer.Equals(userAnswer, StringComparison.OrdinalIgnoreCase))
+            Question currentQuestion = _questionList[_currentQuestionIndex];
+            if(currentQuestion.CorrectAnswer.ToLower() == userAnswer.ToLower() && !_isAnswered)
             {
                 Score++;
+                _isAnswered = true;
+                return true;
             }
+            else
+            {
+                _isAnswered = false;
+                return false;
+            }
+        }
+
+        public int GetTotalNumberOfQuestions()
+        {
+            return _questionList.Count;
         }
 
 

@@ -2,31 +2,48 @@
 
 public partial class MainPage : ContentPage
 {
-	private Quiz quiz;
-	private Question currentQuestion;
+	private Quiz _quiz;
+	private Question _currentQuestion;
+	private bool _isAnswered;
 
 	public MainPage()
 	{
 		InitializeComponent();
-		quiz = new Quiz("My quiz");
-		currentQuestion = quiz.GetNextQuestion();
+		_quiz = new Quiz("My quiz");
 		ShowQuestion();
 	}
 
 	private void ShowQuestion()
 	{
-		
-		quizTitle.Text = quiz.Title;
-		quizQuestion.Text = currentQuestion.QuestionText;
-		
-		if (currentQuestion is TrueFalseQuestion tfq)
+        _isAnswered = false;
+
+		if (_quiz.Score == _quiz.GetTotalNumberOfQuestions())
+		{
+            quizQuestion.Text = "Congratulations, you've finished the quiz!\n\nYour final score is " + _quiz.Score + " out of " + _quiz.GetTotalNumberOfQuestions();
+        }
+		else
+		{
+            nextQuestionButton.IsVisible = true;
+            nextQuestionButton.IsEnabled = true;
+            _currentQuestion = _quiz.GetNextQuestion();
+            quizTitle.Text = _quiz.Title;
+            quizQuestion.Text = _currentQuestion.QuestionText;
+
+            answerButton1.BackgroundColor = Colors.White;
+            answerButton2.BackgroundColor = Colors.White;
+            answerButton3.BackgroundColor = Colors.White;
+            answerButton4.BackgroundColor = Colors.White;
+
+        }
+        
+        if (_currentQuestion is TrueFalseQuestion tfq)
 		{
 			answerButton1.Text = "True";
 			answerButton2.Text = "False";
-			answerButton3.IsVisible = false;
+            answerButton3.IsVisible = false;
             answerButton4.IsVisible = false;
         }
-		else if(currentQuestion is MultipleChoiceQuestion mcq)
+		else if(_currentQuestion is MultipleChoiceQuestion mcq)
 		{
 			answerButton1.Text = mcq.Choices[0];
             answerButton2.Text = mcq.Choices[1];
@@ -35,59 +52,71 @@ public partial class MainPage : ContentPage
             answerButton3.IsVisible = true;
             answerButton4.IsVisible = true;
         }
+		
     }
 
 	private void OnAnswerButtonClicked(object sender, EventArgs e)
 	{
+		if (_isAnswered) return;
+		_isAnswered = true;
+
 		Button button = (Button)sender;
 		string userAnswer = button.Text;
 
-		quiz.CheckUserAnswer(currentQuestion, userAnswer);
+		bool isCorrect = _quiz.CheckUserAnswer(userAnswer);
 
-		if (currentQuestion.CorrectAnswer.Equals(userAnswer, StringComparison.OrdinalIgnoreCase))
-		{
-			
-		}
-		else
-		{
-            
-        }
-		
+
+        button.BackgroundColor = isCorrect ? Colors.Green : Colors.Red;
+
+
+
+        
+
+
     }
 
 	private void OnNextQuestionClicked(object sender, EventArgs e)
 	{
-		currentQuestion = quiz.GetNextQuestion();
 
-		if(currentQuestion == null)
-		{
-			DisplayScore();
-		}
-		else
-		{
-			ResetButtonColors();
-			ShowQuestion();
-		}
-	}
+        if (!_isAnswered) return;
+
+        if (_quiz.Score == _quiz.GetTotalNumberOfQuestions())
+        {
+            DisplayScore();
+            return;
+        }
+
+        ShowQuestion();
+
+        //      Question nextQuestion = _quiz.GetNextQuestion();
+
+        //      if (nextQuestion != null)
+        //{
+        //          _currentQuestion = nextQuestion;
+        //          ShowQuestion();
+
+        //      }
+
+        //else
+        //{
+        //	DisplayScore();
+        //}
+    }
 
 	private void OnQuitButtonClicked(object sender, EventArgs e)
 	{
 
 		DisplayScore();
+        
 
-	}
+    }
 
 	private void DisplayScore()
 	{
-		int totalQuestions = quiz.GetTotalNumberOfQuestions();
-		string message = $"You got {quiz.Score} correct answers out of {totalQuestions}";
+		int totalQuestions = _quiz.GetTotalNumberOfQuestions();
+		string message = $"You got {_quiz.Score} correct answers out of {totalQuestions}";
 		DisplayAlert("Quiz Score", message, "OK");
 	}
-
-	private void ResetButtonColors()
-	{
-	
-    }
 
 
 }
