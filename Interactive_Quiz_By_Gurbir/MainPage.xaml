@@ -30,22 +30,22 @@
                 <Button
                     x:Name="answerButton1"
                     Text="Answer 1"                
-                    Clicked="OnAnswerButtonClicked"
+                    Clicked="OnAnswerButton_Clicked"
                     HorizontalOptions="Center" />
                 <Button
                     x:Name="answerButton2"
                     Text="Answer 2"    
-                    Clicked="OnAnswerButtonClicked"
+                    Clicked="OnAnswerButton_Clicked"
                     HorizontalOptions="Center" />
                 <Button
                     x:Name="answerButton3"
                     Text="Answer 3"          
-                    Clicked="OnAnswerButtonClicked"
+                    Clicked="OnAnswerButton_Clicked"
                     HorizontalOptions="Center" />
                 <Button
                     x:Name="answerButton4"
                     Text="Answer 4"
-                    Clicked="OnAnswerButtonClicked"
+                    Clicked="OnAnswerButton_Clicked"
                     HorizontalOptions="Center" />
 
             </HorizontalStackLayout>
@@ -56,12 +56,12 @@
                 <Button
                     x:Name="nextQuestionButton"
                     Text="Next Question"           
-                    Clicked="OnNextQuestionClicked"
+                    Clicked="OnNextQuestion_Clicked"
                     HorizontalOptions="Center" />
                 <Button
                     x:Name="quitButton"
                     Text="Quit"
-                    Clicked="OnQuitButtonClicked"
+                    Clicked="OnQuitButton_Clicked"
                     HorizontalOptions="Center" />
             </HorizontalStackLayout>
 
